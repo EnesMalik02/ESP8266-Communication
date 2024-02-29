@@ -7,7 +7,7 @@ from tkinter import messagebox, Tk, Canvas, Button, PhotoImage
 ser = serial.Serial('COM4', 115200, timeout=1)
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Ömer Kısa\Desktop\ESP8266-Communication\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"build\assets\frame0")
 
 espData = ""
 def relative_to_assets(path: str) -> Path:
