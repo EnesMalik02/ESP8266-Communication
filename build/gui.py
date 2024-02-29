@@ -1,12 +1,15 @@
-#---------------FIREBASE CODES STARTS HERE----------------------#
+#---------------ARDUNIO CODES STARTS HERE----------------------#
 
-import firebase_admin
-from firebase_admin import credentials
+import serial
 
-cred = credentials.Certificate("dbkey.json")
-firebase_admin.initialize_app(cred)
+ser = serial.Serial('COM3', 115200,timeout=1)
 
-#---------------FIREBASE CODES ENDS HERE----------------------#
+while True:
+    ardunioData = ser.readline().decode('utf-8')
+    print(ardunioData)
+
+
+#---------------ARDUNIO CODES ENDS HERE----------------------#
 
 
 #---------------FUNCTIONS STARTS HERE----------------------#
@@ -22,7 +25,7 @@ is_same.x = None
 #---------------FUNCTIONS ENDS HERE----------------------#
 
 
-#---------------TKINTER CODES STARTS HERE----------------------#
+#---------------UI CODES STARTS HERE----------------------#
 from pathlib import Path
 
 # from tkinter import *
@@ -116,3 +119,5 @@ button_1.place(
 )
 window.resizable(False, False)
 window.mainloop()
+
+#---------------UI CODES ENDS HERE----------------------#
