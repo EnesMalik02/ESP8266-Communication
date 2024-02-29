@@ -1,24 +1,28 @@
 from pathlib import Path
 import serial
+import threading
 from tkinter import messagebox, Tk, Canvas, Button, PhotoImage
 
 # Seri portu başlat
 ser = serial.Serial('COM4', 115200, timeout=1)
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\enesm\Desktop\ESP8266-Communication-main\ESP8266-Communication\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Ömer Kısa\Desktop\ESP8266-Communication\build\assets\frame0")
 
+espData = ""
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+
 # ESP8266'dan gelen verileri okuma ve GUI'yi güncelleme
 def read_from_esp():
+    global espData
     while True:
         try:
             espData = ser.readline().decode('utf-8', errors='replace').strip()
             if espData:
                 # GUI güncellemelerini ana thread üzerinde yapmak için
-                window.event_generate("<<UpdateSensorData>>", data=espData)
+                window.event_generate("<<UpdateSensorData>>", when="tail")
         except serial.SerialException as e:
             print("Seri port hatası:", e)
             messagebox.showerror("Seri Port Hatası", e)
@@ -28,11 +32,17 @@ def read_from_esp():
             messagebox.showerror("Kod Çözme Hatası", e)
             continue
 
+
 # Mesafe verisini GUI'ye yazdırma
 def sensorControl(event):
-    espData = event.data
-    if deger:
-        canvas.itemconfig(deger, text=espData)
+    global espData
+    canvas.itemconfig(deger, text=espData)
+
+
+# GUI başlatma ve seri port okuma iş parçacığını başlatma
+def start_gui_and_read():
+    threading.Thread(target=read_from_esp, daemon=True).start()
+    
 
 window = Tk()
 
@@ -92,28 +102,16 @@ deger = canvas.create_text(
     anchor="nw",
     text="0",
     fill="#FFFFFF",
-    font=("RobotoItalic CondensedThin", 100 * -1)
+    font=("RobotoItalic CondensedThin", 75 * -1)
 )
 
-button_image_1 = PhotoImage(
-    file=relative_to_assets("button_1.png"))
-button_1 = Button(
-    image=button_image_1,
-    borderwidth=0,
-    highlightthickness=0,
-    command=read_from_esp,
-    relief="flat"
-)
 
-button_1.place(
-    x=30.0,
-    y=388.0,
-    width=247.0,
-    height=28.0
-)
 
 window.resizable(False, False)
 
 window.bind("<<UpdateSensorData>>", sensorControl)
+
+if __name__ == "__main__":
+    start_gui_and_read()
 
 window.mainloop()
