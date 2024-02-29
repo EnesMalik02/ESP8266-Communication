@@ -4,7 +4,7 @@ import serial
 
 ser = serial.Serial('COM4', 115200,timeout=1)
 
-espData = ser.readline().decode('ascii')
+espData = ser.readline().decode('utf-8', errors='replace')
 print(espData)
 
 
@@ -41,7 +41,7 @@ from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\zKodlama\Python\IpekYolu\UI Projesi Demo\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Ömer Kısa\Desktop\ESP8266-Communication\build\assets\frame0")
 
 
 def relative_to_assets(path: str) -> Path:
