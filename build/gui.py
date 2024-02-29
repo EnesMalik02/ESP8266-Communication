@@ -2,11 +2,10 @@
 
 import serial
 
-ser = serial.Serial('COM3', 115200,timeout=1)
+ser = serial.Serial('COM4', 115200,timeout=1)
 
-while True:
-    ardunioData = ser.readline().decode('utf-8')
-    print(ardunioData)
+espData = ser.readline().decode('ascii')
+print(espData)
 
 
 #---------------ARDUNIO CODES ENDS HERE----------------------#
@@ -21,6 +20,14 @@ def is_same(x):
         is_same.x = x
         return False
 is_same.x = None
+
+def sensorControl(espData):
+    if is_same(espData):
+        return
+    else:
+        print(espData)
+        canvas.itemconfig(deger, text=espData)
+        return
 
 #---------------FUNCTIONS ENDS HERE----------------------#
 
@@ -108,7 +115,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    # command= lambda:oku_dosya("a.txt"),
+    command= lambda: sensorControl(espData),
     relief="flat"
 )
 button_1.place(
