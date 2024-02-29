@@ -10,9 +10,18 @@ OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"build\assets\frame0")
 
 espData = ""
+
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
+#if the data is same as the previous data, return False, else return True
+def is_same(x):
+    if is_same.x==x:
+        return False
+    else:
+        is_same.x = x
+        return True
+is_same.x = None
 
 # ESP8266'dan gelen verileri okuma ve GUI'yi güncelleme
 def read_from_esp():
@@ -20,7 +29,7 @@ def read_from_esp():
     while True:
         try:
             espData = ser.readline().decode('utf-8', errors='replace').strip()
-            if espData:
+            if espData and is_same(espData):
                 # GUI güncellemelerini ana thread üzerinde yapmak için
                 window.event_generate("<<UpdateSensorData>>", when="tail")
         except serial.SerialException as e:
