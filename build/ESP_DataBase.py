@@ -24,24 +24,34 @@ config_2 = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
-class dataBase:
+class getDataBase:
     def get_heath(self):
         data = db.child("test").get()
         data_dict = data.val()
-        value = data_dict["int"]
+        value = data_dict["sicaklik"]
         return value
 
     def get_humidity(self):
         data = db.child("test").get()
         data_dict = data.val()
-        value = data_dict["float"]
+        value = data_dict["nem"]
         return value
 
     def get_distance(self):
         data = db.child("test").get()
         data_dict = data.val()
         value = data_dict["distance"]
-        return value   
+        return value
+
+    def get_led(self):
+        data = db.child("control").get()
+        data_dict = data.val()
+        value = data_dict["led"]
+        return value
+
+class setDataBase:
+  def set_led(self, value):
+      db.child("control").update({"led": value})
 
 # db_instance = dataBase()
 # distance = db_instance.get_distance()
