@@ -43,15 +43,15 @@ class getDataBase:
         value = data_dict["distance"]
         return value
 
-    def get_led(self):
+    def get_led(self,ledId):
         data = db.child("control").get()
         data_dict = data.val()
-        value = data_dict["led"]
+        value = data_dict[ledId]
         return value
 
 class setDataBase:
-  def set_led(self, value):
-      db.child("control").update({"led": value})
+  def set_led(self, value, ledId):
+      db.child("control").update({ledId: value})
 
 # db_instance = dataBase()
 # distance = db_instance.get_distance()
