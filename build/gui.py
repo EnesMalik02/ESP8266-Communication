@@ -9,7 +9,7 @@ getEspDatas = getDataBase()
 setEspDatas = setDataBase()
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\zKodlama\Python\IpekYolu\ESP8266-Communication-main\ESP8266-Communication\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Ömer Kısa\Desktop\ESP8266-Communication\build\assets\frame0")
 
 espDistance = ""
 espHumidity = ""
