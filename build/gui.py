@@ -3,17 +3,22 @@ import threading
 from tkinter import *
 from ESP_DataBase import *  
 import time
+import speech_recognition as sr
+import pyttsx3 
 
 # Seri portu başlat
 getEspDatas = getDataBase()
 setEspDatas = setDataBase()
+r = sr.Recognizer() 
+
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\Ömer Kısa\Desktop\ESP8266-Communication\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"assets\frame0")
 
 espDistance = ""
 espHumidity = ""
 espHeat = ""
+voiceControl = False
 
 #################################################
 #-------------------FUNCTIONS-------------------#
@@ -22,7 +27,7 @@ espHeat = ""
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
-#if the data is same as the previous data, return False, else return True
+#If the data is same as the previous data, return False, else return True
 def is_same(x):
     if is_same.x==x:
         return False
@@ -32,67 +37,61 @@ def is_same(x):
 is_same.x = None
 
 #DISTANCE SENSOR
-# ESP8266'dan gelen mesafe verileri okuma ve GUI'yi güncelleme
+# Reading distance data from ESP8266 and updating GUI
 def read_distance_esp():
     global espDistance
     while True:
         try:
             espDistance = getEspDatas.get_distance()
-            if espDistance and is_same(espDistance):
-                # GUI güncellemelerini ana thread üzerinde yapmak için
+            if espDistance and is_same(espDistance) and voiceControl != True:
+                # To make GUI updates on the main thread
                 window.event_generate("<<UpdateDistanceSensorData>>", when="tail")
         except Exception as e:
             print("read_distance_esp() de hata:", e)
 
-
-
-# Mesafe verisini GUI'ye yazdırma
 def DistanceSensorControl(event):
     global espDistance
     canvas.itemconfig(distance, text=espDistance)
-#-----ESP8266'dan gelen mesafe verileri okuma ve GUI'yi güncelleme
 
 #HUMIDITY SENSOR
-# ESP8266'dan gelen nem verileri okuma ve GUI'yi güncelleme
+#Reading humidity data from ESP8266 and updating GUI
 def read_humidity_esp():
     global espHumidity
     while True:
         try:
             espHumidity = getEspDatas.get_humidity()
-            if espHumidity and is_same(espHumidity):
-                # GUI güncellemelerini ana thread üzerinde yapmak için
+            if espHumidity and is_same(espHumidity) and voiceControl != True:
+                # To make GUI updates on the main thread
                 window.event_generate("<<UpdateHumiditySensorData>>", when="tail")
         except Exception as e:
             print("read_humidity_esp() de hata:", e)
 
 
-# Mesafe verisini GUI'ye yazdırma
+#Printing distance data to GUI
 def HumiditySensorControl(event):
     global espHumidity
     canvas.itemconfig(humidity, text=espHumidity)
-#-----ESP8266'dan gelen nem verileri okuma ve GUI'yi güncelleme
 
 #HEAT SENSOR
-# ESP8266'dan gelen sıcaklık verileri okuma ve GUI'yi güncelleme
+# Reading temperature data from ESP8266 and updating GUI
 def read_heat_esp():
     global espHeat
     while True:
         try:
             espHeat = getEspDatas.get_heath()
-            if espHeat and is_same(espHeat):
-                # GUI güncellemelerini ana thread üzerinde yapmak için
+            if espHeat and is_same(espHeat) and voiceControl != True:
+                # To make GUI updates on the main thread
                 window.event_generate("<<UpdateHeatSensorData>>", when="tail")
         except Exception as e:
             print("read_heat_esp() de hata:", e)
            
 
-
-# Mesafe verisini GUI'ye yazdırma
+# Printing distance data to GUI
 def HeatSensorControl(event):
     global espHeat
     canvas.itemconfig(heat, text=espHeat)
 
-#------ESP8266'dan gelen sıcaklık verileri okuma ve GUI'yi güncelleme
+#-------------------------------------------------#
 
 def changeColor(btnName,ledID):
     if setup() == True:
@@ -111,21 +110,82 @@ def get_led_value(btnName,ledID):
         canvas.itemconfig(btnName, fill="#59FF3E")
 
 def send_led_on(ledID):
-    led1 = getEspDatas.get_led(ledID)
-    if led1 == "ON":
-        led1 = "OFF"
+    ledStatus = getEspDatas.get_led(ledID)
+    if ledStatus == "ON":
+        ledStatus = "OFF"
     else:
-        led1 = "ON"
+        ledStatus = "ON"
 
-    setEspDatas.set_led(led1,ledID)
-    print(led1)
-    return led1
+    setEspDatas.set_led(ledID, ledStatus)
+    print(f"{ledID} status is : ",ledStatus)
+    return ledStatus
+
+#-------------------SPEECH RECOGNITION-------------------#
+# def SpeakText(command):
+# 	# Initialize the engine
+# 	engine = pyttsx3.init()
+# 	engine.say(command)
+# 	engine.runAndWait()
+	
+# def getVoice():
+# 	# use the microphone as source for input.
+#     with sr.Microphone() as source2:
+#         print("Voice Control Started")
+        
+#         # wait for a second to let the recognizer
+#         # adjust the energy threshold based on
+#         # the surrounding noise level 
+#         r.adjust_for_ambient_noise(source2, duration=0.2)
+        
+#         #listens for the user's input 
+#         audio2 = r.listen(source2)
+        
+#         # Using google to recognize audio
+#         MyText = r.recognize_google(audio2)
+#         MyText = MyText.lower()
+#         print("Did you say ",MyText)
+
+#         if MyText == "green":
+            
+#             value = getEspDatas.get_led("led")
+#             if value == "ON":
+#                 value = "OFF"
+#             else:
+#                 value = "ON"
+    
+#             setEspDatas.set_led("led",value)
+
+#         elif MyText == "red":
+
+#             value = getEspDatas.get_led("led2")
+#             if value == "ON":
+#                 value = "OFF"
+#             else:
+#                 value = "ON"
+    
+#             setEspDatas.set_led("led2",value)
+
+#         elif MyText == "blue":
+
+#             value = getEspDatas.get_led("led3")
+#             if value == "ON":
+#                 value = "OFF"
+#             else:
+#                 value = "ON"
+    
+#             setEspDatas.set_led("led3",value)
+
+#         else:
+#             print("Add to database")
+    
+#-------------------SPEECH RECOGNITION-------------------#
+
 
 #################################################
 #-------------------FUNCTIONS-------------------#
 #################################################
-    
-# GUI başlatma ve seri port okuma iş parçacığını başlatma
+
+#Initializing GUI and starting serial port reading thread
 def start_gui_and_read():
     threading.Thread(target=read_distance_esp, daemon=True).start()
     threading.Thread(target=read_humidity_esp, daemon=True).start()
@@ -135,6 +195,7 @@ def start_gui_and_read():
 #-------------------SETUP CODES-------------------#
 ###################################################
 
+#Before starting the GUI, get the initial values of the LEDs
 def setup():
     get_led_value(btn1, ledID="led")
     get_led_value(btn2, ledID="led2")
@@ -145,15 +206,15 @@ def setup():
 #-------------------SETUP CODES-------------------#
 ###################################################
 
+
 ########################################################
 #-------------------GUI DESİGN CODES-------------------#
 ########################################################
 window = Tk()
 
-window.title("İPEKYOLU ESP KART")
+window.title("ESP8266 DATA EXTRACTION")
 window.geometry("1120x681")
 window.configure(bg = "#E4E9E7")
-    
 
 canvas = Canvas(
     window,
@@ -238,6 +299,22 @@ button_3.place(
     height=86.95082092285156
 )
 
+# button_image_4 = PhotoImage(
+#     file=relative_to_assets("button_3.png"))
+# button_4 = Button(
+#     image=button_image_4,
+#     borderwidth=0,
+#     highlightthickness=0,
+#     command=getVoice,
+#     relief="flat"
+# )
+# button_4.place(
+#     x=458.0,
+#     y=500.0,
+#     width=186.46722412109375,
+#     height=86.95082092285156
+# )
+
 image_image_1 = PhotoImage(
     file=relative_to_assets("image_1.png"))
 image_1 = canvas.create_image(
@@ -247,10 +324,10 @@ image_1 = canvas.create_image(
 )
 
 distance = canvas.create_text(
-    145.0,
+    200.0,
     199.0,
     anchor="nw",
-    text="Mesafe Text",
+    text="DISTANCE Text",
     fill="#000000",
     font=("RobotoRoman Regular", 30 * -1)
 )
@@ -259,34 +336,34 @@ canvas.create_text(
     154.0,
     126.0,
     anchor="nw",
-    text="MESAFE",
+    text="DISTANCE",
     fill="#8EA5BD",
     font=("RobotoRoman Regular", 30 * -1)
 )
 
 humidity = canvas.create_text(
-    488.0,
+    530.0,
     199.0,
     anchor="nw",
-    text="Nem Text",
+    text="HUMIDITY Text",
     fill="#000000",
     font=("RobotoRoman Regular", 30 * -1)
 )
 
 canvas.create_text(
-    515.0,
+    485.0,
     126.0,
     anchor="nw",
-    text="NEM",
+    text="HUMIDITY",
     fill="#8EA5BD",
     font=("RobotoRoman Regular", 30 * -1)
 )
 
 heat = canvas.create_text(
-    808.0,
+    845.0,
     199.0,
     anchor="nw",
-    text="Sıcaklık Text",
+    text="HEAT Text",
     fill="#000000",
     font=("RobotoRoman Regular", 30 * -1)
 )
@@ -295,11 +372,12 @@ canvas.create_text(
     828.0,
     126.0,
     anchor="nw",
-    text="SICAKLIK",
+    text="HEAT",
     fill="#8EA5BD",
     font=("RobotoRoman Regular", 30 * -1)
 )
 
+#-------------------TITLE-------------------#
 canvas.create_text(
     421.0,
     25.0,
@@ -308,7 +386,7 @@ canvas.create_text(
     fill="#000000",
     font=("RobotoRoman Regular", 30 * -1)
 )
-#-------------------BAŞLIK-------------------#
+#-------------------TITLE-------------------#
 
 window.resizable(True, True)
 
@@ -318,7 +396,7 @@ window.bind("<<UpdateDistanceSensorData>>", DistanceSensorControl)
 
 if __name__ == "__main__":
     setup()
-    time.sleep(0.2)
+    time.sleep(0.1)
     start_gui_and_read()
 
 window.mainloop()
