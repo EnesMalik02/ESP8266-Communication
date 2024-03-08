@@ -43,7 +43,7 @@ int count = 0;
 bool signupOK = false;                     //since we are doing an anonymous sign in 
 
 
-
+// Setup options for pin modes, firebas and wifi connections
 void setup(){
   Serial.begin(115200);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -86,6 +86,8 @@ void setup(){
 
 
 void loop(){
+
+  // Read humidity and temperature
   float humidity = dht.readHumidity();
   float temperature = dht.readTemperature();
 
@@ -102,7 +104,7 @@ void loop(){
     /*if (Firebase.RTDB.setInt(&fbdo, "test/int", count)){
       Serial.println("PASSED");
       Serial.println("PATH: " + fbdo.dataPath());
-      Serial.println("TYPE: " + fbdo.dataType());
+      Serial.println("TYPE: " + fbdo.dataType());           // Lines which as a command to test datas are sending to databases
     }
     else {
       Serial.println("FAILED");
@@ -120,6 +122,8 @@ void loop(){
       Serial.println("FAILED");
       Serial.println("REASON: " + fbdo.errorReason());
     }*/
+
+    // Distance, temp and humidity datas sending firebase
     if (Firebase.RTDB.setInt(&fbdo, "test/distance", distance)) {
       Serial.println("Mesafe verisi gönderildi.");
       Serial.println("PATH: "+fbdo.dataPath());
@@ -155,8 +159,8 @@ void loop(){
   }
 }
 
-long calculateDistance()
-{
+long calculateDistance()      //Function to calculate distance
+{        
   long duration, distance;
   digitalWrite(TRIGGER_PIN, LOW);
   delayMicroseconds(2);

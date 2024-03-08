@@ -70,12 +70,12 @@ void controlLED(const String &path, int ledPin, bool &lastState) {
 
 void loop() {
   if (Firebase.ready() && signupOK) {
-    //controlLED("/control/led", greenLed, lastGreenLedState);
-    //controlLED("/control/led2", redLed, lastRedLedState);
-    //controlLED("/control/led3", blueLed, lastBlueLedState);
-    controlLED("/voiceControl/led1", greenLed, lastGreenLedState);
-    controlLED("/voiceControl/led2", redLed, lastRedLedState);
-    controlLED("/voiceControl/led3", blueLed, lastBlueLedState);
+    controlLED("/control/led", greenLed, lastGreenLedState);
+    controlLED("/control/led2", redLed, lastRedLedState);
+    controlLED("/control/led3", blueLed, lastBlueLedState);
+    //controlLED("/voiceControl/led1", greenLed, lastGreenLedState);
+    //controlLED("/voiceControl/led2", redLed, lastRedLedState);
+    //controlLED("/voiceControl/led3", blueLed, lastBlueLedState);
   }
   delay(100); // Veri okuma sıklığını kontrol etmek için gecikme süresi
 }
