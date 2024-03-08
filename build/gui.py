@@ -6,7 +6,6 @@ import time
 import speech_recognition as sr
 import pyttsx3 
 
-# Seri portu başlat
 getEspDatas = getDataBase()
 setEspDatas = setDataBase()
 r = sr.Recognizer() 
