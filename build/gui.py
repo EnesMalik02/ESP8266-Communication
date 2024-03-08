@@ -378,10 +378,10 @@ canvas.create_text(
 
 #-------------------TITLE-------------------#
 canvas.create_text(
-    421.0,
+    355.0,
     25.0,
     anchor="nw",
-    text="İPEKYOLU ESP KART",
+    text="ESP8266 DATA EXTRACTION",
     fill="#000000",
     font=("RobotoRoman Regular", 30 * -1)
 )
@@ -395,7 +395,7 @@ window.bind("<<UpdateDistanceSensorData>>", DistanceSensorControl)
 
 if __name__ == "__main__":
     setup()
-    time.sleep(0.1)
+    time.sleep(0.2)
     start_gui_and_read()
 
 window.mainloop()
