@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <Firebase_ESP_Client.h>
-// ESP data recieve card
+
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
 
@@ -20,6 +20,11 @@ FirebaseAuth auth;
 FirebaseConfig config;
 
 bool signupOK = false;
+
+// LED durumlarını tutacak değişkenler
+bool lastGreenLedState = false;
+bool lastRedLedState = false;
+bool lastBlueLedState = false;
 
 void setup() {
   Serial.begin(115200);
@@ -52,19 +57,25 @@ void setup() {
   Firebase.reconnectWiFi(true);
 }
 
-void controlLED(const String &path, int ledPin) {
+void controlLED(const String &path, int ledPin, bool &lastState) {
   if (Firebase.RTDB.getString(&fbdo, path)) {
     String ledValue = fbdo.stringData();
-    digitalWrite(ledPin, ledValue == "ON" ? HIGH : LOW);
+    bool newState = ledValue == "ON";
+    if(newState != lastState) {
+      digitalWrite(ledPin, newState ? HIGH : LOW);
+      lastState = newState;
+    }
   }
 }
 
 void loop() {
   if (Firebase.ready() && signupOK) {
-    // Kontrol edilecek LED'ler ve ilgili Firebase yolları
-    controlLED("/control/led", greenLed);
-    controlLED("/control/led2", redLed);
-    controlLED("/control/led3", blueLed);
+    //controlLED("/control/led", greenLed, lastGreenLedState);
+    //controlLED("/control/led2", redLed, lastRedLedState);
+    //controlLED("/control/led3", blueLed, lastBlueLedState);
+    controlLED("/voiceControl/led1", greenLed, lastGreenLedState);
+    controlLED("/voiceControl/led2", redLed, lastRedLedState);
+    controlLED("/voiceControl/led3", blueLed, lastBlueLedState);
   }
-  delay(1000); // Veri okuma sıklığını kontrol etmek için gecikme süresi
+  delay(100); // Veri okuma sıklığını kontrol etmek için gecikme süresi
 }
